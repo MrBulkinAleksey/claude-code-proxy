@@ -440,7 +440,7 @@ mod tests {
     use super::*;
 
     fn base() -> Value {
-        json!({"model":"gpt-5.6-sol","messages":[{"role":"system","content":"rules"},{"role":"user","content":[{"type":"text","text":"hello"}]}]})
+        json!({"model":"gpt-6-sol","messages":[{"role":"system","content":"rules"},{"role":"user","content":[{"type":"text","text":"hello"}]}]})
     }
 
     #[test]
@@ -531,7 +531,7 @@ mod tests {
             Some("model")
         );
         assert_eq!(
-            translate_request(json!({"model":"gpt-5.6-sol","messages":[]}))
+            translate_request(json!({"model":"gpt-6-sol","messages":[]}))
                 .unwrap_err()
                 .param
                 .as_deref(),
@@ -568,13 +568,5 @@ mod tests {
             translate_request(lite).unwrap_err().code.as_deref(),
             Some("unsupported_parameter")
         );
-
-        let mut full = base();
-        full["model"] = json!("gpt-5.4");
-        full["temperature"] = json!(0.2);
-        full["top_p"] = json!(0.9);
-        let translated = translate_request(full).unwrap();
-        assert_eq!(translated.upstream["temperature"], 0.2);
-        assert_eq!(translated.upstream["top_p"], 0.9);
     }
 }

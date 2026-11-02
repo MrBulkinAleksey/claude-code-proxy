@@ -703,9 +703,9 @@ mod tests {
         assert_eq!(body["model"], "gpt-6-sol");
         assert!(resolved.use_responses_lite);
 
-        let mut fast = request(json!({"model":"gpt-5.4-fast","input":[]}));
+        let mut fast = request(json!({"model":"gpt-6-sol-fast","input":[]}));
         let resolved = shape_native_request(&mut fast).unwrap();
-        assert_eq!(resolved.model, "gpt-5.4");
+        assert_eq!(resolved.model, "gpt-6-sol");
         assert_eq!(fast["service_tier"], "priority");
     }
 
@@ -713,7 +713,7 @@ mod tests {
     fn native_request_preserves_parallel_tool_calls() {
         for parallel in [false, true] {
             let mut body = request(json!({
-                "model":"gpt-5.4",
+                "model":"gpt-6-sol",
                 "input":[],
                 "parallel_tool_calls":parallel
             }));
@@ -749,7 +749,7 @@ mod tests {
     #[test]
     fn explicit_service_tier_is_preserved() {
         let mut body = request(json!({
-            "model":"gpt-5.4-fast",
+            "model":"gpt-6-sol-fast",
             "service_tier":"flex",
             "input":[]
         }));
@@ -761,12 +761,12 @@ mod tests {
     fn hosted_search_uses_full_lane_and_upgrades_luna() {
         for tool_type in ["web_search", "web_search_preview"] {
             let mut body = request(json!({
-                "model":"gpt-5.6-luna",
+                "model":"gpt-6-luna",
                 "tools":[{"type":tool_type}],
                 "input":[]
             }));
             let resolved = shape_native_request(&mut body).unwrap();
-            assert_eq!(resolved.model, "gpt-5.6-sol");
+            assert_eq!(resolved.model, "gpt-6-sol");
             assert!(!resolved.use_responses_lite);
         }
     }

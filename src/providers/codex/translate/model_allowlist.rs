@@ -3,28 +3,20 @@ use crate::config;
 use super::request::ServiceTier;
 
 pub const ALLOWED_MODELS: &[&str] = &[
-    "gpt-5.2",
-    "gpt-5.3-codex",
-    "gpt-5.3-codex-spark",
-    "gpt-5.4",
-    "gpt-5.4-mini",
-    "gpt-5.5",
-    "gpt-5.6-luna",
-    "gpt-5.6-sol",
-    "gpt-5.6-terra",
     "gpt-6-astra",
     "gpt-6-luna",
     "gpt-6-sol",
     "gpt-6.1-sol",
+    "gpt-6.1-terra",
 ];
 
 pub const MODEL_ALIASES: &[(&str, &str)] = &[
     ("haiku", "gpt-6-luna"),
     ("claude-haiku-4-5", "gpt-6-luna"),
     ("claude-haiku-4-5-20251001", "gpt-6-luna"),
-    ("sonnet", "gpt-5.6-terra"),
-    ("claude-sonnet-4-6", "gpt-5.6-terra"),
-    ("claude-sonnet-5", "gpt-5.6-terra"),
+    ("sonnet", "gpt-6.1-terra"),
+    ("claude-sonnet-4-6", "gpt-6.1-terra"),
+    ("claude-sonnet-5", "gpt-6.1-terra"),
     ("opus", "gpt-6-sol"),
     ("claude-opus-4-7", "gpt-6-sol"),
     ("claude-opus-4-8", "gpt-6-sol"),
@@ -167,6 +159,7 @@ pub fn uses_responses_lite(model: &str) -> bool {
             | "gpt-6-luna"
             | "gpt-6-sol"
             | "gpt-6.1-sol"
+            | "gpt-6.1-terra"
     )
 }
 
@@ -215,13 +208,13 @@ mod tests {
     #[test]
     fn sonnet_resolves_to_terra() {
         let r = resolve_model_request("sonnet");
-        assert_eq!(r.model, "gpt-5.6-terra");
+        assert_eq!(r.model, "gpt-6.1-terra");
     }
 
     #[test]
     fn sonnet_5_resolves_to_terra() {
         let r = resolve_model_request("claude-sonnet-5");
-        assert_eq!(r.model, "gpt-5.6-terra");
+        assert_eq!(r.model, "gpt-6.1-terra");
     }
 
     #[test]
@@ -260,12 +253,13 @@ mod tests {
         assert!(uses_responses_lite("gpt-6-sol"));
         assert!(uses_responses_lite("gpt-6-luna"));
         assert!(uses_responses_lite("gpt-6.1-sol"));
+        assert!(uses_responses_lite("gpt-6.1-terra"));
     }
 
     #[test]
     fn fast_suffix_adds_priority() {
-        let r = resolve_model_request("gpt-5.6-sol-fast");
-        assert_eq!(r.model, "gpt-5.6-sol");
+        let r = resolve_model_request("gpt-6.1-terra-fast");
+        assert_eq!(r.model, "gpt-6.1-terra");
         assert_eq!(r.service_tier, Some(ServiceTier::Priority));
     }
 
@@ -416,11 +410,9 @@ mod tests {
 
     #[test]
     fn allowed_models_accept_base() {
-        assert!(assert_allowed_model("gpt-5.4").is_ok());
-        assert!(assert_allowed_model("gpt-5.6-sol").is_ok());
-        assert!(assert_allowed_model("gpt-5.6-terra").is_ok());
         assert!(assert_allowed_model("gpt-6-astra").is_ok());
-        assert!(assert_allowed_model("gpt-5.6-luna").is_ok());
+        assert!(assert_allowed_model("gpt-6.1-terra").is_ok());
+        assert!(assert_allowed_model("gpt-5.6-terra").is_err());
         assert!(assert_allowed_model("gpt-6.1-sol").is_ok());
     }
 

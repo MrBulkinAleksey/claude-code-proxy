@@ -2194,18 +2194,17 @@ mod tests {
     fn supported_models_includes_fast_variants() {
         let provider = CodexProvider::new();
         let models = provider.supported_models();
-        assert!(models.contains(&"gpt-5.6-sol".to_string()));
-        assert!(models.contains(&"gpt-5.6-sol-fast".to_string()));
-        assert!(models.contains(&"gpt-5.6-terra".to_string()));
-        assert!(models.contains(&"gpt-5.6-luna".to_string()));
+        assert!(!models.contains(&"gpt-5.6-sol".to_string()));
+        assert!(models.contains(&"gpt-6.1-terra-fast".to_string()));
+        assert!(models.contains(&"gpt-6.1-terra".to_string()));
+        assert!(!models.contains(&"gpt-5.6-luna".to_string()));
         assert!(models.contains(&"gpt-6-sol".to_string()));
         assert!(models.contains(&"gpt-6-sol-fast".to_string()));
         assert!(models.contains(&"gpt-6-luna".to_string()));
         assert!(models.contains(&"gpt-6.1-sol".to_string()));
         assert!(models.contains(&"gpt-6.1-sol-fast".to_string()));
         assert!(models.contains(&"gpt-6.1-sol-ultrafast".to_string()));
-        assert!(models.contains(&"gpt-5.4".to_string()));
-        assert!(models.contains(&"gpt-5.4-mini".to_string()));
+        assert!(!models.contains(&"gpt-5.4".to_string()));
         assert!(models.contains(&"gpt-6-astra-fast".to_string()));
         assert!(models.contains(&"gpt-6-astra-ultrafast".to_string()));
         assert!(!models.contains(&"gpt-6-sol-ultrafast".to_string()));

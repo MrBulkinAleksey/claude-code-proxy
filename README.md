@@ -142,3 +142,29 @@ Run `claude-code-proxy models` for the current catalog or
 ## License
 
 [MIT](LICENSE)
+
+### Local OpenAI-compatible backend (local build)
+
+Set `CCP_LOCAL_MODELS` to a comma-separated list of upstream model IDs to enable
+an additional provider. Select `local/<model-id>` in Claude Code. Existing
+providers and Claude aliases retain their routing.
+
+- `CCP_LOCAL_BASE_URL`: API root, default `http://127.0.0.1:1234/v1`.
+- `CCP_LOCAL_MODELS`: upstream model IDs; unset disables this provider.
+- `CCP_LOCAL_API_KEY`: optional bearer token; defaults to `local`.
+
+The server must support streaming Chat Completions and tool calling. Token
+counting is a local estimate. Images require a vision-capable upstream model.
+Restart the proxy after changing these environment variables. Include localhost
+in `NO_PROXY` when using an outbound proxy.
+
+Run `CCP_TEST_URL=http://127.0.0.1:18766 python3 scripts/test-local-backend.py`
+against a test listener to check buffered text, streaming, and a tool round trip.
+
+### InferX backend (local build)
+
+Set `CCP_INFERX_MODELS` to a comma-separated list of model IDs and
+`CCP_INFERX_API_KEY` to the InferX API key. The optional
+`CCP_INFERX_BASE_URL` defaults to `https://model.inferx.net/endpoints/v1`.
+Select the configured model ID directly in Claude Code. This backend is
+independent of the local OpenAI-compatible backend.

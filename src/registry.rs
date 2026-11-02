@@ -40,19 +40,11 @@ const CURSOR_LEGACY_MODELS: &[&str] = &[
 ];
 
 pub(crate) const CODEX_MODELS: &[&str] = &[
-    "gpt-5.2",
-    "gpt-5.3-codex",
-    "gpt-5.3-codex-spark",
-    "gpt-5.4",
-    "gpt-5.4-mini",
-    "gpt-5.5",
-    "gpt-5.6-luna",
-    "gpt-5.6-sol",
-    "gpt-5.6-terra",
     "gpt-6-astra",
     "gpt-6-luna",
     "gpt-6-sol",
     "gpt-6.1-sol",
+    "gpt-6.1-terra",
 ];
 
 pub(crate) const KIMI_MODELS: &[&str] = &["kimi-for-coding", "kimi-k2.6", "kimi-k3", "k2.6", "k3"];
@@ -86,6 +78,16 @@ impl Registry {
             crate::providers::opencode::advertised_models(),
         );
 
+        let local_models = crate::providers::local::advertised_models();
+        if !local_models.is_empty() {
+            models.insert("local".into(), local_models);
+        }
+
+        let inferx_models = crate::providers::local::inferx_models();
+        if !inferx_models.is_empty() {
+            models.insert("inferx".into(), inferx_models);
+        }
+
         let mut handlers = BTreeMap::new();
         for (name, entries) in &models {
             let handler: Arc<dyn Provider> = match name.as_str() {
@@ -93,6 +95,8 @@ impl Registry {
                 "kimi" => Arc::new(crate::providers::kimi::KimiProvider::new()),
                 "cursor" => Arc::new(crate::providers::cursor::CursorProvider::new()),
                 "grok" => Arc::new(crate::providers::grok::GrokProvider::new()),
+                "local" => Arc::new(crate::providers::local::LocalProvider),
+                "inferx" => Arc::new(crate::providers::local::InferxProvider),
                 "opencode" => Arc::new(crate::providers::opencode::OpenCodeProvider::new()),
                 _ => Arc::new(PlaceholderProvider::new(name, entries.clone())),
             };
@@ -458,6 +462,8 @@ mod tests {
             "gpt-6-luna",
             "gpt-6.1-sol",
             "gpt-6.1-sol-fast",
+            "gpt-6.1-terra",
+            "gpt-6.1-terra-fast",
         ] {
             assert_eq!(
                 registry.provider_for_model(model, None).unwrap().name(),
@@ -490,8 +496,15 @@ mod tests {
                 .name(),
             "kimi"
         );
+        assert!(registry.provider_for_model("gpt-5.6-luna", None).is_none());
+        assert_eq!(
+            registry
+                .provider_for_model("opencode-go/gpt-5.6-luna", None)
+                .unwrap()
+                .name(),
+            "opencode"
+        );
         for (model, owner) in [
-            ("gpt-5.6-luna", "codex"),
             ("grok-4.5", "grok"),
             ("grok-4.6", "grok"),
             ("kimi-k3", "kimi"),
